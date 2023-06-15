@@ -12,6 +12,7 @@ import (
 	"os"
 	"strings"
 
+	terrors "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors"
 	extapi "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/rest"
@@ -57,7 +58,7 @@ type customDNSProviderSolver struct {
 	// 3. uncomment the relevant code in the Initialize method below
 	// 4. ensure your webhook's service account has the required RBAC role
 	//    assigned to it for interacting with the Kubernetes APIs you need.
-	//client kubernetes.Clientset
+	// client kubernetes.Clientset
 }
 
 // customDNSProviderConfig is a structure that is used to decode into when
@@ -80,7 +81,7 @@ type customDNSProviderConfig struct {
 	// These fields will be set by users in the
 	// `issuer.spec.acme.dns01.providers.webhook.config` field.
 
-	//Email           string `json:"email"`
+	// Email           string `json:"email"`
 	TTL          *uint64                  `json:"ttl"`
 	SecretId     string                   `json:"secretId"`
 	SecretKeyRef cmmeta.SecretKeySelector `json:"secretKeyRef"`
@@ -166,10 +167,15 @@ func findTxtRecords(client *dnspod.Client, domainID *uint64, zone, fqdn string) 
 	req.RecordType = &recordType
 	resp, err := client.DescribeRecordList(req)
 	if err != nil {
+		if e, ok := err.(*terrors.TencentCloudSDKError); ok {
+			if e.Code == "ResourceNotFound.NoDataOfRecord" {
+				klog.Infof("Ignore TXT record not found %s.%s", recordName, zone)
+				return nil, nil
+			}
+		}
 		klog.Errorf("Failed to list records (%d, %s): %v", *domainID, recordName, err)
 		return nil, fmt.Errorf("dnspod API call has failed: %v", err)
 	}
-
 	return resp.Response.RecordList, nil
 }
 
@@ -218,7 +224,7 @@ func (c *customDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
 	req.RecordLine = &line
 	req.SubDomain = &name
 
-	klog.Infof("create record: %+#v", req)
+	klog.Infof("create record: %+#v", *req)
 	_, err = dnspodClient.CreateRecord(req)
 	if err != nil {
 		klog.Errorf("Failed to create record: %v", err)

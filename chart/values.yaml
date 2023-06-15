@@ -55,3 +55,12 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+namespace: "cert-manager"
+
+cert-manager:
+  enabled: false
+  installCRDs: true
+  prometheus:
+    enabled: false
+  namespace: cert-manager
