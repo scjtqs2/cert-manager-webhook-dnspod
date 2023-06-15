@@ -5,4 +5,4 @@ name: cert-manager-webhook-dnspod
 version: 1.4.3
 type: application
 maintainers:
-- name: imroc
+- name: scjtqs

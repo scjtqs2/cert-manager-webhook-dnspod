@@ -13,7 +13,7 @@ This is a cert-manager webhook solver for [DNSPod](https://www.dnspod.cn).
 Generate SecretId and SecretKey in [Cloud API](https://console.cloud.tencent.com/cam/capi)
 
 ```console
-$ helm pull oci://registry-1.docker.io/imroc/cert-manager-webhook-dnspod --untar
+$ helm pull oci://registry-1.docker.io/scjtqs/cert-manager-webhook-dnspod --untar
 $ helm upgrade --install cert-manager-webhook-dnspod ./cert-manager-webhook-dnspod \
     --namespace cert-manager \
     --set clusterIssuer.secretId=<SECRET_ID> \
@@ -45,7 +45,7 @@ spec:
 Use `kubectl apply` to install:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/imroc/cert-manager-webhook-dnspod/master/bundle.yaml
+kubectl apply -f https://raw.githubusercontent.com/scjtqs2/cert-manager-webhook-dnspod/master/bundle.yaml
 ```
 
 Create a secret that contains TencentCloud account's `SecretKey`:

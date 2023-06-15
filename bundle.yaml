@@ -15,7 +15,7 @@ metadata:
     app: cert-manager-webhook-dnspod
 rules:
   - apiGroups:
-      - acme.imroc.cc
+      - acme.scjtqs.com
     resources:
       - '*'
     verbs:
@@ -145,14 +145,14 @@ spec:
       serviceAccountName: cert-manager-webhook-dnspod
       containers:
         - name: cert-manager-webhook-dnspod
-          image: "imroc/cert-manager-webhook-dnspod:latest"
+          image: "scjtqs/cert-manager-webhook-dnspod:1.4.3"
           imagePullPolicy: IfNotPresent
           args:
             - --tls-cert-file=/tls/tls.crt
             - --tls-private-key-file=/tls/tls.key
           env:
             - name: GROUP_NAME
-              value: "acme.imroc.cc"
+              value: "acme.scjtqs.com"
           ports:
             - name: https
               containerPort: 443
@@ -180,13 +180,13 @@ spec:
 apiVersion: apiregistration.k8s.io/v1
 kind: APIService
 metadata:
-  name: v1alpha1.acme.imroc.cc
+  name: v1alpha1.acme.scjtqs.com
   labels:
     app: cert-manager-webhook-dnspod
   annotations:
     cert-manager.io/inject-ca-from: "cert-manager/cert-manager-webhook-dnspod-tls"
 spec:
-  group: acme.imroc.cc
+  group: acme.scjtqs.com
   groupPriorityMinimum: 1000
   versionPriority: 15
   service:
