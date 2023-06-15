@@ -1,24 +1,22 @@
-FROM golang:1.16-alpine AS build_deps
+FROM golang:1.19-alpine3.15 AS build
 
-RUN apk add --no-cache git
+ADD . /workspace
 
 WORKDIR /workspace
+ENV GO111MODULE=on
+ENV GOPROXY=http://goproxy.cn
 
-COPY go.mod .
-COPY go.sum .
+RUN go mod tidy
 
-RUN go mod download
 
-FROM build_deps AS build
+RUN CGO_ENABLED=0 go build -o webhook -ldflags '-s -w -extldflags "-static"' .
 
-COPY . .
+FROM alpine:3.15
 
-RUN CGO_ENABLED=0 go build -o webhook -ldflags '-w -extldflags "-static"' .
-
-FROM alpine:3.9
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
 
 RUN apk add --no-cache ca-certificates
 
 COPY --from=build /workspace/webhook /usr/local/bin/webhook
 
-ENTRYPOINT ["webhook"]
+ENTRYPOINT ["/usr/local/bin/webhook"]

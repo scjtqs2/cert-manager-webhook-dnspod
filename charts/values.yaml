@@ -6,15 +6,15 @@
 # solve the DNS01 challenge.
 # This group name should be **unique**, hence using your own company's domain
 # here is recommended.
-groupName: acme.imroc.cc
+groupName: acme.scjtqs.com
 
 certManager:
   namespace: cert-manager
   serviceAccountName: cert-manager
 
 image:
-  repository: imroc/cert-manager-webhook-dnspod
-  tag: latest
+  repository: scjtqs/cert-manager-webhook-dnspod
+  tag: 1.3.0
   pullPolicy: Always
 
 clusterIssuer:
